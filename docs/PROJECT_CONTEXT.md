@@ -14,7 +14,9 @@
 - Native local/mock tests and bundle smoke pass; latest checks recorded in TASK_LOG.md.
 - Real inference, real R2 and unchanged upstream runtime comparison remain unverified.
 - No paid deployment or inference performed; no endpoint credentials or budget supplied.
-- Fresh main root snapshot authorized; retain previous history locally as legacy-before-native.
+- Fresh main root snapshot 5e64415 created; previous history retained locally as legacy-before-native.
+- Implementation 310bfc7 and annotated v0.2.1 published; main/tag Actions checks and builds passed.
+- Published GitHub ZIP/checksum verified; that release is installed and running in /Applications. Evidence: TASK_LOG.md.
 - Minimal walkthrough/drag-drop/video-test extension approved and implemented; see SIMPLE_IMPLEMENTATION_PLAN.md.
 - Dedicated FLUX.3 provider adapter not implemented.
 

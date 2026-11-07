@@ -42,5 +42,7 @@ tests, 9 Rust tests, 10 Python mocks, native release/audit/restart smoke and ZIP
 packaging passed. Installed app launched from /Applications; a picker-imported MP4
 rendered after restart. Browser workflow JSON drop passed; native Finder gesture
 was not directly verified. Three native window sizes showed dark corners/preview.
-Remote push/tag/CI verification is the final publication step. See TASK_LOG.md and
-REQUIREMENTS_STATUS.md for remaining cloud/provider/editor limits.
+Main 310bfc7 and v0.2.1 are pushed; both main/tag CI builds passed. The published
+ZIP/checksum was downloaded and verified; that exact binary is installed and
+running in Applications, with installed-binary smoke passing. See TASK_LOG.md for
+release evidence and REQUIREMENTS_STATUS.md for remaining provider/editor limits.

@@ -1,0 +1,256 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Immutable, versioned user definitions. Secrets live in encrypted UserSetting rows.
+model StudioDefinition {
+  id        String   @id @default(uuid())
+  kind      String
+  name      String
+  version   String
+  document  String
+  createdAt DateTime @default(now())
+  @@unique([kind, name, version])
+}
+
+model StudioRun {
+  id          String   @id @default(uuid())
+  endpointId  String
+  workflowId  String
+  snapshot    String
+  status      String
+  providerId  String?
+  uncertain   Boolean  @default(false)
+  error       String?
+  artifacts   String   @default("[]")
+  events      String   @default("[]")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([status])
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Job {
+  id            String    @id @default(uuid())
+  userId        String
+  workspaceId   String?   // 워크스페이스 ID (선택적)
+  status        String
+  type          String
+  prompt        String?
+  runpodJobId   String?   // RunPod job ID 추가
+  options       String?
+  resultUrl     String?
+  thumbnailUrl  String?    // 썸네일 URL 추가
+  isFavorite    Boolean   @default(false) // 즐겨찾기 상태
+  createdAt     DateTime  @default(now())
+  modelId       String    @default("unknown") // 모델 ID 추가
+  endpointId    String?   // RunPod Endpoint ID 추가
+  error         String?   // 에러 메시지 추가
+  cost          Float?    // 비용 추가
+  completedAt   DateTime?
+  
+  // Media input paths for job input reuse
+  imageInputPath String?  // Path to input image file
+  videoInputPath String?  // Path to input video file
+  audioInputPath String?  // Path to input audio file
+
+  // 관계 설정
+  workspace     Workspace? @relation("WorkspaceJobs", fields: [workspaceId], references: [id])
+
+  @@index([userId, createdAt(sort: Desc)]) // 사용자별 최신 순 정렬을 위한 복합 인덱스
+  @@index([userId, status]) // 사용자별 상태별 조회를 위한 인덱스
+  @@index([status, createdAt(sort: Desc)]) // 상태별 최신 순 정렬을 위한 인덱스
+  @@index([workspaceId, createdAt(sort: Desc)]) // 워크스페이스별 최신 순 정렬을 위한 인덱스
+  @@map("jobs") // Map model name to table name
+}
+
+model Preset {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  type      String
+  options   String
+  createdAt DateTime @default(now())
+
+  @@map("presets")
+}
+
+model CreditActivity {
+  id        String   @id @default(uuid())
+  userId    String
+  activity  String
+  amount    Int
+  createdAt DateTime @default(now())
+
+  @@map("credit_activities")
+}
+
+model UserSetting {
+  id           String   @id @default(uuid())
+  userId       String
+  serviceName  String
+  configKey    String
+  configValue  String
+  isEncrypted  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, serviceName, configKey])
+  @@map("user_settings")
+}
+
+model ApiLog {
+  id             String   @id @default(uuid())
+  userId         String
+  service        String
+  endpoint       String
+  method         String
+  requestBody    String?
+  responseStatus Int?
+  responseBody   String?
+  errorMessage   String?
+  durationMs     Int?
+  createdAt      DateTime @default(now())
+
+  @@map("api_logs")
+}
+
+model UsageStats {
+  id              String   @id @default(uuid())
+  userId          String
+  service         String
+  endpoint        String?
+  callCount       Int      @default(0)
+  successCount    Int      @default(0)
+  errorCount      Int      @default(0)
+  totalDurationMs Int      @default(0)
+  date            DateTime
+  createdAt       DateTime @default(now())
+
+  @@unique([userId, service, endpoint, date])
+  @@map("usage_stats")
+}
+
+model Workspace {
+  id          String    @id @default(uuid())
+  userId      String
+  name        String
+  description String?
+  color       String?   // 워크스페이스 색상 테마
+  isDefault   Boolean   @default(false) // 기본 워크스페이스 여부
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // 관계 설정
+  jobs        Job[]     @relation("WorkspaceJobs")
+  media       WorkspaceMedia[] @relation("WorkspaceMedia")
+  loras       LoRA[]
+  
+  @@unique([userId, name]) // 사용자별 워크스페이스 이름은 고유해야 함
+  @@index([userId])
+  @@map("workspaces")
+}
+
+model WorkspaceMedia {
+  id          String    @id @default(uuid())
+  workspaceId String
+  type        String    // 'image' | 'video' | 'audio'
+  url         String
+  prompt      String?
+  modelId     String?
+  createdAt   DateTime  @default(now())
+
+  // 관계 설정
+  workspace   Workspace @relation("WorkspaceMedia", fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, createdAt(sort: Desc)])
+  @@map("workspace_media")
+}
+
+model VideoProject {
+  id            String   @id @default(uuid())
+  title         String
+  description   String   @default("")
+  
+  // Resolution settings
+  aspectRatio   String   @default("16:9")
+  qualityPreset String   @default("720p")
+  width         Int      @default(1280)
+  height        Int      @default(720)
+  
+  duration      Int      @default(30000)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  tracks        VideoTrack[]
+  
+  @@map("video_projects")
+}
+
+model VideoTrack {
+  id        String   @id @default(uuid())
+  projectId String
+  type      String   // 'video' | 'music' | 'voiceover'
+  label     String
+  locked    Boolean  @default(true)
+  order     Int      @default(0)
+  
+  // Audio settings
+  volume    Int      @default(100) // 0-200
+  muted     Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+  
+  project   VideoProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  keyframes VideoKeyFrame[]
+  
+  @@map("video_tracks")
+}
+
+model VideoKeyFrame {
+  id        String   @id @default(uuid())
+  trackId   String
+  timestamp Int      // milliseconds
+  duration  Int      // milliseconds
+  dataType  String   // 'image' | 'video' | 'music' | 'voiceover'
+  mediaId   String
+  url       String
+  prompt    String?
+  
+  // Media fitting (for image/video)
+  fitMode   String?  @default("contain") // 'contain' | 'cover' | 'fill'
+  
+  // Audio settings (for music/voiceover)
+  volume    Int?     // 0-200, null means use track volume
+  
+  createdAt DateTime @default(now())
+  
+  track     VideoTrack @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  
+  @@map("video_keyframes")
+}
+
+model LoRA {
+  id          String    @id @default(uuid())
+  name        String
+  fileName    String
+  s3Path      String    // Path in S3 bucket
+  s3Url       String    // Full S3 URL
+  fileSize    BigInt    // File size in bytes
+  extension   String    // .safetensors or .ckpt
+  workspaceId String?
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  uploadedAt  DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([workspaceId])
+  @@index([uploadedAt])
+  @@map("loras")
+}

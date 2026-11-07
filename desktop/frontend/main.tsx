@@ -1,0 +1,14 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { installNativeTransport } from './transport';
+import MainLayout from '@/components/layout/MainLayout';
+import { I18nProvider } from '@/lib/i18n/context';
+import { ToastProvider } from '@/components/ui/toast';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter-tight/600.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@/app/globals.css';
+installNativeTransport();
+createRoot(document.getElementById('root')!).render(<I18nProvider><ToastProvider><MainLayout/></ToastProvider></I18nProvider>);

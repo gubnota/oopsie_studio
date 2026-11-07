@@ -1,0 +1,59 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Oopsie Studio",
+  "version": "0.2.0",
+  "identifier": "com.oopsie.studio",
+  "build": {
+    "frontendDist": "../desktop-dist",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "npm run desktop:frontend:dev",
+    "beforeBuildCommand": "npm run desktop:frontend"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Oopsie Studio",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 1000,
+        "minHeight": 700,
+        "backgroundColor": "#0a0a14",
+        "theme": "Dark"
+      }
+    ],
+    "security": {
+      "capabilities": [],
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' asset: http://asset.localhost https: data: blob:; media-src 'self' asset: http://asset.localhost https: data: blob:; connect-src 'self' ipc: http://ipc.localhost asset: http://asset.localhost; worker-src 'self' blob:",
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "$APPDATA/media/**"
+        ]
+      }
+    },
+    "withGlobalTauri": true
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "app"
+    ],
+    "category": "GraphicsAndDesign",
+    "copyright": "Oopsie Studio contributors",
+    "shortDescription": "A calm workspace for AI media",
+    "icon": [
+      "icons/icon.icns",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/32x32.png"
+    ],
+    "macOS": {
+      "minimumSystemVersion": "12.0",
+      "signingIdentity": "-"
+    },
+    "resources": {
+      "../LICENSE.md": "LICENSE.md"
+    }
+  }
+}

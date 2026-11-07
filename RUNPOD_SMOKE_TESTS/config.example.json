@@ -1,0 +1,12 @@
+{
+  "apiKeyEnv": "RUNPOD_API_KEY",
+  "budgetUsd": 0,
+  "httpTimeoutSeconds": 15,
+  "downloadHosts": ["REPLACE_WITH_ACCOUNT.r2.cloudflarestorage.com"],
+  "storage": {"putUrlEnv": "SMOKE_S3_PUT_URL", "getUrlEnv": "SMOKE_S3_GET_URL"},
+  "endpoints": {
+    "cpu-smoke": {"id": "REPLACE_CPU_ENDPOINT", "authorizedLive": false, "rateUsdPerSecond": 0, "jobTimeoutSeconds": 60, "billableOverheadSeconds": 30},
+    "comfy-image": {"id": "REPLACE_COMFY_ENDPOINT", "authorizedLive": false, "rateUsdPerSecond": 0, "jobTimeoutSeconds": 120, "billableOverheadSeconds": 60},
+    "talking-head": {"id": "REPLACE_VIDEO_ENDPOINT", "authorizedLive": false, "rateUsdPerSecond": 0, "jobTimeoutSeconds": 120, "billableOverheadSeconds": 60}
+  }
+}

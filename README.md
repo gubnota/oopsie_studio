@@ -3,7 +3,7 @@
 A native macOS workspace for ComfyUI workflows, generated media, and timeline editing.
 The interface uses the Oopsie purple palette and supplied loop/spark icons.
 
-**[Official Oopsie setup guide](docs/SETUP.md)** · [Implementation status](docs/REQUIREMENTS_STATUS.md) · [Русский](README.ru.md)
+**[Official Oopsie setup guide](docs/SETUP.md)** · [Binary downloads and releases](docs/RELEASING.md) · [Implementation status](docs/REQUIREMENTS_STATUS.md) · [Русский](README.ru.md)
 
 ## Current desktop
 

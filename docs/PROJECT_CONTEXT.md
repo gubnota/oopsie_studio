@@ -4,7 +4,7 @@
 - Project: Oopsie Studio; repository: gubnota/oopsie_studio.
 - Purpose: native macOS workspace for AI media workflows, private storage, and editing.
 - Users: individual creators using their own ComfyUI/Runpod endpoints and R2 buckets.
-- Current local version: 0.2.0, macOS arm64, ad-hoc signed; not notarized.
+- Current local version: 0.2.1, macOS arm64, ad-hoc signed; not notarized.
 
 ## Current milestone
 - User approved the compiled React + Rust migration with “pls do it”.
@@ -15,7 +15,7 @@
 - Real inference, real R2 and unchanged upstream runtime comparison remain unverified.
 - No paid deployment or inference performed; no endpoint credentials or budget supplied.
 - Fresh main root snapshot authorized; retain previous history locally as legacy-before-native.
-- New walkthrough/drag-drop/video-test extension awaiting explicit plan approval.
+- Minimal walkthrough/drag-drop/video-test extension approved and implemented; see SIMPLE_IMPLEMENTATION_PLAN.md.
 - Dedicated FLUX.3 provider adapter not implemented.
 
 ## Stack and boundaries
@@ -59,7 +59,7 @@
 - Runpod worker must accept the expected workflow input and durable HTTPS outputs.
 - Inline Runpod base64 outputs unsupported by native adapter.
 - ComfyUI reference input uploads to remote workers are not implemented.
-- Shared upload controls currently choose files; drag-and-drop extension is pending.
+- Shared upload controls accept validated file drops; Finder timeline drops and the picker share persisted imports.
 - Native upload limit 32 MiB/file; workflow import 2 MiB; artifact download 1 GiB.
 - Shared project revisions/multipart transfers and advanced media presets remain proposed.
 - Historical audit/compatibility reports are evidence, not implemented feature lists.
@@ -72,4 +72,4 @@
 - Record exact verification and live-cloud boundaries in TASK_LOG.md.
 - Keep UI centered outside sidebar; shared fancy controls and muted purple-gray dividers.
 - Remove upstream branding from product UI while retaining legal attribution.
-- Initial root commit on main is authorized; old main is renamed legacy-before-native. Remote push/tag remains outside this step.
+- Initial root commit on main is authorized; old main is renamed legacy-before-native. Version tags, GitHub binary builds, remote push and Applications installation are authorized.

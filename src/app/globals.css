@@ -71,6 +71,7 @@ input[type="checkbox"]:checked { background: #7c74ff; border-color: #a8a2ff; box
 .studio-menu-item[data-state="checked"] { color: #b7b1ff; }
 .studio-menu-item[data-disabled] { opacity: .4; pointer-events: none; }
 .studio-upload { display: flex; align-items: center; gap: 14px; padding: 12px; border: 1px dashed #514b71; border-radius: 12px; background: #7c74ff06; min-width: 0; }
+.studio-upload-active { border-color: #7c74ff; background: #7c74ff20; box-shadow: 0 0 0 3px #7c74ff12; }
 .studio-upload-button, input[type="file"]::file-selector-button { display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; border: 1px solid #514b71; border-radius: 8px; background: #28243e; color: #dedaff; cursor: pointer; flex-shrink: 0; }
 button { -webkit-user-select: none; user-select: none; }
 button:not(:disabled) { cursor: pointer; }

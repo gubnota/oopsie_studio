@@ -1,8 +1,8 @@
 # Official Oopsie Studio setup guide
 
-Status: native 0.2.0 local build. Local/mock transport and native media checks have passed;
-real Runpod generation and real R2 round trips have not been run. The expanded welcome
-walkthrough is being designed; use the steps below with the current sidebar.
+Status: native 0.2.1. Welcome includes two model-free CPU examples and connection steps.
+Local/mock transport and native media checks pass; real Runpod generation and real R2
+round trips remain unverified. See [binary builds and tagged releases](RELEASING.md).
 
 ## Build and open the native app
 
@@ -34,7 +34,9 @@ cargo test --offline --manifest-path src-tauri/Cargo.toml
 The Python harness uses loopback mocks; its image and video aliases both return
 a synthetic PNG. That harness is not evidence of real AI video generation.
 See [manual mock CLI steps](../RUNPOD_SMOKE_TESTS/README.md#start-free).
-Native media tests exercise a small local MP4 export using installed FFmpeg.
+Native media tests exercise a small local MP4 export using installed FFmpeg. A separate
+Rust mock test returns a real 32×32 H.264 MP4 from ComfyUI history, downloads it, verifies
+its SHA-256 and reopens the saved run. This tests transport/persistence, not AI inference.
 
 ## Connect actual local ComfyUI
 
@@ -43,9 +45,12 @@ Native media tests exercise a small local MP4 export using installed FFmpeg.
    ComfyUI with `python main.py --cpu --listen 127.0.0.1 --port 8188`.
 2. In Oopsie **Endpoints**, select ComfyUI, enter a name/version and
    `http://127.0.0.1:8188`, save, then test connection and available nodes.
-3. In ComfyUI, make a small `EmptyImage → SaveImage` graph (32×32, batch 1).
-   Export **API format**, rather than the visual canvas format.
-4. In Oopsie **Workflows**, choose that JSON file or paste its API graph. Give it
+3. In Oopsie **Welcome**, choose **First pixel → Use example** or **Download JSON**.
+   This is a 32×32 `EmptyImage → SaveImage` graph with no model. **First frames**
+   uses twelve empty frames and ComfyUI core `SaveWEBM` (VP9, 12 fps). It needs
+   that node and its encoder. macOS WebM playback varies; use H.264 MP4 for editing.
+   For your own graph, export **API format** from ComfyUI rather than visual canvas format.
+4. In Oopsie **Workflows**, drop or choose the JSON file, use the prefilled example, or paste its API graph. Give it
    a name/version and save it. An imported plain graph is wrapped automatically.
 5. In **Generate**, select the saved workflow and endpoint, review inputs, and submit once.
 6. Inspect **Jobs**. Completed files appear in **Library**. “Download original”
@@ -128,3 +133,11 @@ A dedicated FLUX.3 adapter is not implemented. FLUX.3 Video uses the
 are not substitutes for a BFL API key. See the [proposed integration plan](FLUX3_INTEGRATION_PLAN.md).
 No FLUX.3 request has been sent. Hosted video service pricing is separate from
 Runpod GPU pricing. Other FLUX.3 family products require their own contracts.
+
+## Import files into the editor
+
+Open Timeline, create/open a project, then drop media onto the timeline tracks or its
+shared file upload control. The picker follows the same import path. Supported image,
+video and audio files are saved locally before insertion; the maximum is 32 MiB per file.
+H.264 MP4 is the safest video test. Import errors appear in the editor. Workflows and
+other shared upload controls also accept file drops and enforce their picker filters.

@@ -1,6 +1,6 @@
 {
   "name": "oopsie-studio",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,7 +9,7 @@
     "build": "next build",
     "start": "next start --hostname 127.0.0.1",
     "lint": "eslint src --quiet",
-    "test": "node --test tests/*.test.mjs && tsx --test tests/*.test.ts",
+    "test": "node --test tests/*.test.mjs && node --import tsx --test tests/*.test.ts",
     "test:watch": "vitest",
     "db:migrate": "prisma db push",
     "db:generate": "prisma generate",
@@ -22,7 +22,8 @@
     "desktop:build": "tauri build",
     "desktop:frontend": "vite build --config desktop/vite.config.ts",
     "desktop:frontend:dev": "vite --config desktop/vite.config.ts",
-    "desktop:audit": "node scripts/audit-desktop.mjs"
+    "desktop:audit": "node scripts/audit-desktop.mjs",
+    "desktop:package": "node scripts/package-desktop.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.893.0",

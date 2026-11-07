@@ -85,7 +85,10 @@ temp_status.txt
 /src-tauri/target/
 /src-tauri/resources/
 /desktop-dist/
+/release/
 /.oopsie/
 
 # Generated Tauri permission schemas
 /src-tauri/gen/
+
+/.playwright-mcp/

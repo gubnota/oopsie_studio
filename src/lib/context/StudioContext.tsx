@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { toVideoKeyframe } from '@/lib/videoKeyframes';
 
 export type StudioTool =
     | 'video-generation'
@@ -1035,10 +1036,7 @@ export function StudioProvider({ children }: { children: ReactNode }) {
                     const keyframesByTrack: Record<string, VideoKeyFrame[]> = {};
                     const frames = data.keyframes || loadedTracks.flatMap((track: VideoTrack & {keyframes?: any[]}) => track.keyframes || []);
                     frames.forEach((frame: any) => {
-                        const kf: VideoKeyFrame = frame.data ? frame : {...frame, data: {
-                            type: frame.dataType, mediaId: frame.mediaId, url: frame.url,
-                            prompt: frame.prompt, fitMode: frame.fitMode, volume: frame.volume,
-                        }};
+                        const kf = toVideoKeyframe(frame);
                         (keyframesByTrack[kf.trackId] ||= []).push(kf);
                     });
                     setKeyframes(keyframesByTrack);
@@ -1289,8 +1287,8 @@ export function StudioProvider({ children }: { children: ReactNode }) {
             if (data.success && data.keyframe) {
                 setKeyframes(prev => ({
                     ...prev,
-                    [keyframe.trackId]: prev[keyframe.trackId].map(kf =>
-                        kf.id === newKeyframe.id ? data.keyframe : kf
+                    [keyframe.trackId]: (prev[keyframe.trackId] || []).map(kf =>
+                        kf.id === newKeyframe.id ? toVideoKeyframe(data.keyframe, newKeyframe) : kf
                     ),
                 }));
                 return data.keyframe.id;

@@ -1,6 +1,6 @@
 [package]
 name = "oopsie-studio"
-version = "0.2.0"
+version = "0.2.1"
 description = "Oopsie Studio macOS desktop"
 edition = "2021"
 

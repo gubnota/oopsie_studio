@@ -1,4 +1,5 @@
 'use client';
+import { useMediaImport } from './useMediaImport';
 
 import React, { HTMLAttributes, useRef, MouseEvent, DragEvent, useState, useMemo, useCallback, useEffect } from 'react';
 import { cn, normalizeUrl } from '@/lib/utils';
@@ -38,6 +39,7 @@ export const VideoTimeline = React.memo(function VideoTimeline({
   const { setCurrentTimestamp, addKeyframe, addTrack, updateKeyframe, removeKeyframe, player, setZoom, clearSelection } = useStudio();
   const { t } = useI18n();
   const timelineRef = useRef<HTMLDivElement>(null);
+  const { importFiles, importing, error: importError } = useMediaImport(project.id);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'warning' | 'error' } | null>(null);
 
@@ -252,10 +254,17 @@ export const VideoTimeline = React.memo(function VideoTimeline({
 
   const handleDrop = useCallback(async (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
+    event.stopPropagation();
     setValidationError(null);
     setNotification(null);
     
     try {
+      if (event.dataTransfer.files.length) {
+        const rect = timelineRef.current?.getBoundingClientRect();
+        const timestamp = rect ? Math.max(0, (event.clientX - rect.left) / pixelsPerMs) : 0;
+        await importFiles(Array.from(event.dataTransfer.files), timestamp);
+        return;
+      }
       const mediaDataStr = event.dataTransfer.getData('application/json');
       if (!mediaDataStr) return;
 
@@ -483,7 +492,7 @@ export const VideoTimeline = React.memo(function VideoTimeline({
       setValidationError(errorMessage);
       console.error('Failed to handle drop:', error);
     }
-  }, [timelineWidth, durationSeconds, getTrackIdForMediaType, addKeyframe, getMediaDuration, tracks, keyframes]);
+  }, [timelineWidth, durationSeconds, pixelsPerMs, importFiles, getTrackIdForMediaType, addKeyframe, getMediaDuration, tracks, keyframes]);
 
   const handleDragOver = useCallback((event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -649,6 +658,8 @@ export const VideoTimeline = React.memo(function VideoTimeline({
       aria-label={t('videoEditor.messages.videoTimeline')}
       {...props}
     >
+      {importing&&<p role="status" className="studio-caption px-4 py-2">Importing media…</p>}
+      {importError&&<p role="alert" className="text-sm text-[#F0A868] px-4 py-2">{importError}</p>}
       {/* Validation Error Display */}
       {validationError && (
         <div 

@@ -38,11 +38,14 @@
 - Lost acknowledgement stays uncertain; no automatic resubmit. Explicit attach verifies graph/client ID.
 - Refresh uses ComfyUI history/queue or Runpod status; 404 is an error.
 - Artifacts download atomically, bounded 1 GiB each, record SHA-256 before completion.
+- ComfyUI history outputs accept `images`, `gifs`, `videos`, and `audio` arrays.
 - No global ComfyUI interrupt that might cancel unrelated work.
 
 ## Project persistence (implemented)
 - Workspace/media/project/track/keyframe CRUD routes preserve existing editor DTOs.
 - Loading project returns nested tracks with keyframes.
+- Persisted keyframes expose flat `dataType`, `url`, `mediaId`, etc.; the UI adapter restores nested `data` on load/save acknowledgement.
+- Picker and file-drop imports use the same managed upload route, enforce 32 MiB/file, and report metadata failures.
 - SQLite remains local; no automatic database/team sync.
 
 ## Independent smoke harness

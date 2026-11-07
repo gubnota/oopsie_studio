@@ -91,11 +91,11 @@ Related files: docs/NATIVE_MIGRATION_PLAN.md, src-tauri/, desktop/frontend/
 # ADR-0010: Welcome examples before storage configuration
 
 Date: 2026-11-07
-Status: Proposed
+Status: Accepted
 
 Context: User cannot find a practical welcome workflow and requested a Base44 prompt.
 Decision: Design a first-run gallery and local ComfyUI/Runpod walkthrough using existing Oopsie assets; move optional R2 setup below the first workflow. Distinguish synthetic CPU tests, actual GPU inference and planned FLUX.3 integration.
-Consequences: Prompt and setup guide created; expanded welcome/DnD/video tests still require implementation. FLUX.3 Video has a separate proposed API plan; no adapter or paid call implied.
+Consequences: Prompt, setup guide and minimal welcome/DnD/video tests implemented under ADR-0012. FLUX.3 Video has a separate proposed API plan; no adapter or paid call implied.
 Related files: docs/BASE44_WELCOME_PROMPT.md, docs/SETUP.md, docs/FLUX3_INTEGRATION_PLAN.md
 
 # ADR-0011: Standalone main snapshot with retained legacy branch
@@ -107,3 +107,13 @@ Context: User requested a fresh initial commit on main and renaming the old bran
 Decision: Rename old main to legacy-before-native; create a parentless initial commit on main. Remove former account links from the snapshot while preserving original copyright, noncommercial license and source reference attribution.
 Consequences: Old commits remain reachable locally on legacy-before-native. The new main has independent ancestry; no remote history rewrite, push or release tag is performed by this step.
 Related files: docs/UPSTREAM_IMPORT_MANIFEST.md, LICENSE.md, docs/REQUIREMENTS_STATUS.md
+
+# ADR-0012: Minimal welcome and tagged native binaries
+
+Date: 2026-11-07
+Status: Accepted
+
+Context: User approved the simplest walkthrough/import extension and requested tags, GitHub binary builds and Applications installation.
+Decision: Ship synthetic 32×32 CPU manifests, shared validated file drops, persisted timeline imports and flat clip DTO normalization. Test video downloads against a local MP4 mock. Build macOS arm64 ZIPs in Actions and publish on matching version tags.
+Consequences: No paid cloud calls or dedicated FLUX.3 adapter. Binaries remain ad-hoc signed and unnotarized; real model/R2 validation remains separate.
+Related files: docs/SIMPLE_IMPLEMENTATION_PLAN.md, docs/RELEASING.md, .github/workflows/desktop.yml

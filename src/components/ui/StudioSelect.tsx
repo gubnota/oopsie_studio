@@ -2,6 +2,7 @@
 import React, { Children, isValidElement, useState } from 'react';
 import * as Menu from '@radix-ui/react-dropdown-menu';
 import { Check, ChevronDown, Upload } from 'lucide-react';
+import { fileSelectionError } from '@/lib/fileSelection';
 
 type Props = Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'multiple' | 'size'>;
 /** Shared, keyboard-accessible menu; no platform select popup. */
@@ -25,5 +26,11 @@ export function StudioSelect({children, value, defaultValue, onChange, className
 }
 export function StudioFileInput({onChange, ...props}:React.InputHTMLAttributes<HTMLInputElement>) {
   const ref=React.useRef<HTMLInputElement>(null),[filename,setFilename]=useState('JSON or media file');
-  return <div className="studio-upload"><input {...props} type="file" ref={ref} className="sr-only" tabIndex={-1} onChange={event=>{setFilename(Array.from(event.target.files??[]).map(f=>f.name).join(', ')||'No file selected');onChange?.(event);}}/><button type="button" className="studio-upload-button" disabled={props.disabled} onClick={()=>ref.current?.click()}><Upload size={16}/>Choose file</button><span className="truncate studio-caption" title={filename}>{filename}</span></div>;
+  const [dragging,setDragging]=useState(false),[error,setError]=useState('');
+  return <div className="space-y-2"><div className={`studio-upload ${dragging?'studio-upload-active':''}`} onDragOver={event=>{if(!event.dataTransfer.types.includes('Files'))return;event.preventDefault();event.stopPropagation();if(!props.disabled)setDragging(true);}} onDragLeave={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node))setDragging(false);}} onDrop={event=>{
+    event.preventDefault();event.stopPropagation();setDragging(false);if(props.disabled)return;
+    const files=Array.from(event.dataTransfer.files), problem=fileSelectionError(files,props.accept,props.multiple);
+    if(problem){setError(problem);return;}
+    if(ref.current){const transfer=new DataTransfer();files.forEach(file=>transfer.items.add(file));ref.current.files=transfer.files;ref.current.dispatchEvent(new Event('change',{bubbles:true}));}
+  }}><input {...props} type="file" ref={ref} className="sr-only" tabIndex={-1} onChange={event=>{const problem=fileSelectionError(Array.from(event.target.files??[]),props.accept,props.multiple);setError(problem??'');if(problem)return;setFilename(Array.from(event.target.files??[]).map(f=>f.name).join(', '));onChange?.(event);}}/><button type="button" className="studio-upload-button" disabled={props.disabled} onClick={()=>{if(ref.current)ref.current.value='';ref.current?.click();}}><Upload size={16}/>Choose file</button><span className="truncate studio-caption" title={filename}>{dragging?'Drop to import':filename}</span></div>{error?<p role="alert" className="text-xs text-[#F0A868]">{error}</p>:<p className="studio-caption text-xs">Or drop {props.multiple?'files':'a file'} here{props.accept?` · ${props.accept}`:''}</p>}</div>;
 }

@@ -1,0 +1,60 @@
+name: macOS desktop
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    # GitHub's standard macos-15 runner is Apple silicon.
+    runs-on: macos-15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Prepare native tools
+        run: |
+          test "$(uname -m)" = arm64
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          brew install ffmpeg
+      - run: npm ci
+      - name: Verify source
+        run: |
+          npm run typecheck
+          npm run lint
+          npm test
+          cargo test --locked --manifest-path src-tauri/Cargo.toml
+          python3 -m unittest discover -s RUNPOD_SMOKE_TESTS -p 'test_*.py'
+      - name: Build and verify app
+        run: |
+          npm run desktop:build
+          npm run desktop:audit
+          node scripts/smoke-desktop.mjs
+          npm run desktop:package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Oopsie-Studio-macOS-arm64
+          path: release/*
+          if-no-files-found: error
+      - name: Publish tagged binaries
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" --verify-tag --title "Oopsie Studio $RELEASE_TAG" --notes-file docs/RELEASE_NOTES.md
+          fi
+          gh release upload "$RELEASE_TAG" release/* --clobber

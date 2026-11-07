@@ -10,6 +10,9 @@
 - `src/components/layout/StorageBrowser.tsx`: private bucket browser and transfers.
 - `src/components/video-editor/`: retained timeline, preview, export dialog and clip interactions.
 - `src/lib/context/StudioContext.tsx`: React project/media/timeline state.
+- `src/components/layout/WelcomeGuide.tsx`, `src/lib/workflows/examples.ts`: CPU walkthrough and downloadable manifests.
+- `src/components/video-editor/useMediaImport.ts`, `src/lib/videoKeyframes.ts`: shared persisted imports and flat DTO conversion.
+- `src/lib/fileSelection.ts`: picker/drop filter validation.
 - `src/lib/workflows/manifest.ts`: workflow types and browser-side validation.
 - `src-tauri/src/main.rs`: Tauri entry, narrow `api` command, native smoke CLI.
 - `src-tauri/src/service.rs`: SQLite, Keychain settings, route dispatch, project CRUD.
@@ -22,6 +25,8 @@
 
 ## Build and tests
 - `package.json`: separate desktop and browser scripts.
+- `.github/workflows/desktop.yml`, `scripts/package-desktop.mjs`: arm64 binary builds, tagged releases and checksums.
+- `tests/import.test.ts`, `tests/fixtures/micro-video.mp4`: drop/clip contract tests and synthetic MP4 fixture.
 - `scripts/audit-desktop.mjs`: size/content/codesign audit.
 - `scripts/smoke-desktop.mjs`: native SQLite/restart/runtime smoke.
 - Rust inline unit/integration tests in `src-tauri/src/`.
@@ -37,6 +42,7 @@
 - `desktop/server.mjs`, `scripts/prepare-desktop.mjs`, `desktop/loading/`: superseded Node bundle tooling; not called by native build.
 
 ## Guides and decisions
+- `docs/RELEASING.md`, `docs/RELEASE_NOTES.md`: binary downloads, tags, CI and installation.
 - `README.md`, `README.ru.md`, `docs/SETUP.md`: product/build/setup instructions.
 - `docs/NATIVE_MIGRATION_PLAN.md`: approved current local implementation scope.
 - Six compact memory files in `docs/`: current architecture and task state.

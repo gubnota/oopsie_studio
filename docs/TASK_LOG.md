@@ -1,26 +1,17 @@
 # Task Log
 
-## 2026-11-07 — current: native migration and welcome design
-- Fresh initial main snapshot created for the authorized initial commit; old main renamed legacy-before-native. Account links removed from the snapshot; copyright/license and source reference retained. No remote push/tag. Root-snapshot whitespace check exposes inherited baseline whitespace; changes relative to legacy-before-native pass.
-- Added docs/REQUIREMENTS_STATUS.md and README link: practical welcome, shared DnD, FLUX.3 adapter, video-drop crash diagnosis, live cloud validation and publication remain incomplete.
-- Rechecked 4 frontend/session tests, 8 Rust tests, 10 Python mocks, native persistence/restart smoke and bundle audit (9.96 MiB). npm test CLI pipe was sandbox-blocked; the same tests passed via node --import tsx. Python mocks passed with loopback permission. No paid calls.
-
-- Editor error fallback centering: fill the remaining flex pane, center the complete card and disclosure, wrap long diagnostics, and allow scrolling in short windows. Typecheck, lint and native release build passed (9.96 MiB). Actual component verified in a temporary browser fixture: collapsed at 1280×720, expanded at 1000×700 (both card center offsets 0), and scrollable at 1000×400 with no horizontal overflow. Evidence: /tmp/oopsie-centered-error.jpg. Fixture removed; video-drop crash cause remains undiagnosed.
-- Inspected the published Base44 welcome, workflow guide and screen mockups. Confirmed the short-video poster itself contains white edge strips; idle shows them while hover zoom conceals them.
-- Added docs/BASE44_PREVIEW_FIX_PROMPT.md with the exact asset finding, persistent decorative crop/replacement guidance and viewport/state checks. Hosted Base44 project has not been edited.
-- Added opaque dark generated-media/player surfaces and global dark scrollbar tracks/corners; actual outputs retain contain/full-frame display.
-- Validation: typecheck, lint and native release build passed (9.96 MiB, ad-hoc signed). Reopened the rebuilt app and visually checked the empty timeline preview: dark surfaces, no white side strips in the checked view. Evidence: /tmp/oopsie-dark-preview-check.png. Multiple viewport sizes and populated-media states were not visually verified.
-- User resumed local desktop migration with “pls do it”; native React/Vite + Rust/Tauri implementation replaces the bundled Node server.
-- Local native bundle built successfully at approximately 9.96 MiB; no Node/node_modules/Chromium/FFmpeg bundled. Ad-hoc signed, not notarized.
-- Prior checks passed: frontend typecheck/lint, 4 frontend/session tests, 8 Rust tests, 10 independent Python tests, bundle audit and native CRUD/restart/media smoke.
-- Applied shared Oopsie palette/controls, centered content, muted dividers, static-text selection policy and visible branding cleanup. Legal attribution preserved.
-- Native/webview dark background and scrollbar-corner styling included in the rebuilt app. Resize gesture did not change the captured window size; multi-size resize verification remains outstanding.
-- User requested a welcome screen with real ComfyUI examples and prepared Runpod instructions, then specifically requested a Base44 prompt.
-- Created docs/BASE44_WELCOME_PROMPT.md: existing brand/icon reuse, four example cards, guided local/serverless setup, optional R2, honest prototype states and planned FLUX.3 card. Prompt only; not sent to Base44.
-- Created docs/SETUP.md and linked it from README. Guide distinguishes local mock tests, real ComfyUI templates, unverified cloud deployment and actual editor limits.
-- User requested “Also plan full FLUX.3 API integration”; created docs/FLUX3_INTEGRATION_PLAN.md for full Video modes. Proposed adapter is not implemented; approval remains required for that separate scope.
-- Expanded welcome implementation, shared drag-and-drop and local video-output tests remain outstanding; the current app still shows its earlier storage-focused welcome.
-- No live Runpod/R2/FLUX.3 inference, paid deployment, or remote publication performed in this segment. Initial snapshot is committed in this step; remote push remains outstanding.
+## 2026-11-07 — current: 0.2.1 minimal native release
+- Approved scope: docs/SIMPLE_IMPLEMENTATION_PLAN.md; main commit, annotated v0.2.1, push, GitHub binary builds and Applications installation authorized.
+- Implemented welcome with downloadable 32×32 synthetic CPU image/video manifests, import actions, local ComfyUI and scale-to-zero Runpod guidance. These examples do not run AI inference.
+- Shared upload controls now validate file drops and picker selections. Header/timeline imports persist media before adding clips. Flat saved/load keyframe DTOs are normalized to fix the imported-video preview crash.
+- Added a real MP4 fixture and ComfyUI history-output download/hash/persistence mock covering videos and gifs keys.
+- Added macOS arm64 Actions checks/build/artifacts and matching-tag GitHub Releases, ZIP/checksum packaging, docs/RELEASING.md and release notes. Publication/CI results must be confirmed from the remote, not inferred from local checks.
+- Local checks passed: typecheck, lint, 7 frontend tests, 9 Rust tests, 10 Python mocks, release build, bundle audit, native SQLite/CRUD/restart smoke and ZIP packaging. Loopback mocks and native runtime required sandbox permission; no paid calls.
+- Final bundle: 10,446,736 bytes (9.96 MiB), five files, valid ad-hoc signature; no Node/Next server, node_modules, Chromium or bundled FFmpeg. Version 0.2.1 installed at /Applications/Oopsie Studio.app and launched successfully.
+- UI checks: welcome example downloaded; browser JSON file drop imported; native picker MP4 import rendered and survived app restart. Native Finder drag gesture was not directly verified. Shared import logic is covered by tests.
+- Populated preview and native window sizes 2880×1800, 3384×2168 and 2404×1604 checked: dark surfaces/corners, no white edge strips in those views. Error fallback centering was verified previously collapsed/expanded and in a short scrolling viewport. Full per-control/codec audit remains incomplete.
+- Main root snapshot 5e64415 preserved; old history remains locally on legacy-before-native. Existing copyright/noncommercial license retained.
+- Outstanding: live ComfyUI/Runpod inference, R2 round trip, remote input upload, full FLUX.3 adapter and advanced CapCut features. Hosted Base44 poster strips require the supplied prompt in the user-owned project.
 
 ## Historical: 2026-11-07 — validation-first correction
 - User superseded Engui-first order with audit → independent API → original comparison → decision → prototype → Tauri.

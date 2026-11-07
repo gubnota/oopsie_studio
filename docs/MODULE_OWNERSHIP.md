@@ -27,3 +27,9 @@
 - Tests belong to the implementing module; integration tests verify service boundaries.
 - Real worker/model and paid-cloud validation are recorded separately from mocks.
 - Preserve legal attribution while using Oopsie branding in the product.
+
+## Welcome and media imports
+- Welcome examples are inert API manifests owned by the React shell; they never auto-submit.
+- Shared controls own file filtering and drop feedback; the editor import hook owns upload/metadata and clip creation.
+- StudioContext converts flat persistence DTOs to nested clip data on load and save acknowledgement.
+- Release workflow owns macOS builds, checksums and tag publication; credentials are not application assets.

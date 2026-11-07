@@ -552,7 +552,7 @@ async fn refresh(s: &NativeState, local_id: &str, attached: Option<&str>) -> Res
     let mut outputs = Vec::new();
     if let Some(nodes) = entry["outputs"].as_object() {
         for output in nodes.values() {
-            for kind in ["images", "gifs", "audio"] {
+            for kind in ["images", "gifs", "videos", "audio"] {
                 if let Some(files) = output[kind].as_array() {
                     for file in files {
                         if file["type"] == "output" {
@@ -688,6 +688,89 @@ async fn cancel(s: &NativeState, local_id: &str) -> Result<Value> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn video_history_download_is_persisted_with_checksum() {
+        tauri::async_runtime::block_on(async {
+            use std::io::{Read, Write};
+            for kind in ["gifs", "videos"] {
+                let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+                let origin = format!("http://{}", listener.local_addr().unwrap());
+                let fixture = include_bytes!("../../tests/fixtures/micro-video.mp4");
+                let history = json!({"video-test":{"status":{"completed":true},"outputs":{"2":{(kind):[{"filename":"micro.mp4","subfolder":"","type":"output"}]}}}}).to_string();
+                let server = std::thread::spawn(move || {
+                    listener.set_nonblocking(true).unwrap();
+                    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(20);
+                    for expected in [
+                        "GET /object_info",
+                        "POST /prompt",
+                        "GET /history/video-test",
+                        "GET /view?",
+                    ] {
+                        let mut stream = loop {
+                            match listener.accept() {
+                                Ok((stream, _)) => break stream,
+                                Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                                    assert!(
+                                        std::time::Instant::now() < deadline,
+                                        "mock request timed out: {expected}"
+                                    );
+                                    std::thread::sleep(std::time::Duration::from_millis(10));
+                                }
+                                Err(e) => panic!("{e}"),
+                            }
+                        };
+                        stream
+                            .set_read_timeout(Some(std::time::Duration::from_secs(5)))
+                            .unwrap();
+                        let mut buffer = [0u8; 65536];
+                        let n = stream.read(&mut buffer).unwrap();
+                        assert!(String::from_utf8_lossy(&buffer[..n]).starts_with(expected));
+                        let body: &[u8] = match expected {
+                            "GET /object_info" => br#"{"EmptyImage":{},"SaveVideo":{}}"#,
+                            "POST /prompt" => br#"{"prompt_id":"video-test"}"#,
+                            "GET /history/video-test" => history.as_bytes(),
+                            _ => fixture,
+                        };
+                        write!(
+                            stream,
+                            "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+                            body.len()
+                        )
+                        .unwrap();
+                        stream.write_all(body).unwrap();
+                    }
+                });
+                let dir = std::env::temp_dir().join(id());
+                let state = NativeState::new(dir.clone()).unwrap();
+                let w=define(&state,&json!({"kind":"workflow","name":"video","version":"1","document":{"schemaVersion":1,"graph":{"1":{"class_type":"EmptyImage","inputs":{}},"2":{"class_type":"SaveVideo","inputs":{"video":["1",0]}}},"bindings":[]}})).unwrap();
+                let e=define(&state,&json!({"kind":"endpoint","name":"local","version":"1","document":{"provider":"comfyui","url":origin}})).unwrap();
+                let run = submit(
+                    &state,
+                    &json!({"workflowId":w["id"],"endpointId":e["id"],"values":{}}),
+                )
+                .await
+                .unwrap();
+                let run_id = run["id"].as_str().unwrap();
+                refresh(&state, run_id, None).await.unwrap();
+                server.join().unwrap();
+                drop(state);
+                let state = NativeState::new(dir.clone()).unwrap();
+                let saved = parsed(state.one("StudioRun", run_id).unwrap()).unwrap();
+                assert_eq!(saved["status"], "Completed");
+                assert_eq!(saved["artifacts"][0]["size"], fixture.len());
+                assert_eq!(
+                    saved["artifacts"][0]["sha256"],
+                    format!("{:x}", Sha256::digest(fixture))
+                );
+                assert_eq!(
+                    std::fs::read(dir.join("media").join(run_id).join("0.mp4")).unwrap(),
+                    fixture
+                );
+                drop(state);
+                std::fs::remove_dir_all(dir).unwrap();
+            }
+        });
+    }
     #[test]
     fn validates_mapping_and_values() {
         let doc = json!({"schemaVersion":1,"graph":{"1":{"class_type":"Node","inputs":{"size":16}}},"bindings":[{"key":"size","node":"1","input":"size","type":"number","min":1,"max":64}]});
